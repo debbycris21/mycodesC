@@ -1,0 +1,14 @@
+#include <stdio.h>
+#include <time.h>
+
+int main(){
+
+struct tm *data_atual;
+time_t  t = time(NULL);
+
+data_atual = localtime(&t);
+
+printf("Data e Hora: %s\n", asctime(data_atual));
+
+return 0; 
+}
