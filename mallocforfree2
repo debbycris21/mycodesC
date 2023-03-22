@@ -1,0 +1,13 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+int main(){
+
+ int *v;
+ int n = 10;
+ v = malloc (n*sizeof(int));
+ for (i=0; i<10; i++)
+    scanf("%d", &v[i]);
+free(v);
+return 0; 
+}
