@@ -1,0 +1,538 @@
+//Nome: Débora Cristina Figueiredo de Almeida
+//Matrícula: 202202798398   Profª.: Simone Gama
+
+          //Exercício Avaliativo AV2
+            
+Questão 1. (ORDENAÇÃO) Desenvolva um programa em C que tendo um vetor de n posições, imprima esse vetor ordenado em ordem crescente. Elabore um menu que escolha duas formas de ordenação: 
+Bubble Sort ou InsertionSort.
+
+R: #include <stdio.h>
+
+// Função para trocar dois elementos de posição
+void trocar(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// Função para ordenar o vetor usando o algoritmo Bubble Sort
+void bubbleSort(int vetor[], int tamanho) {
+    int i, j;
+    for (i = 0; i < tamanho - 1; i++) {
+        for (j = 0; j < tamanho - i - 1; j++) {
+            if (vetor[j] > vetor[j + 1]) {
+                trocar(&vetor[j], &vetor[j + 1]);
+            }
+        }
+    }
+}
+
+// Função para ordenar o vetor usando o algoritmo Insertion Sort
+void insertionSort(int vetor[], int tamanho) {
+    int i, chave, j;
+    for (i = 1; i < tamanho; i++) {
+        chave = vetor[i];
+        j = i - 1;
+        while (j >= 0 && vetor[j] > chave) {
+            vetor[j + 1] = vetor[j];
+            j = j - 1;
+        }
+        vetor[j + 1] = chave;
+    }
+}
+
+// Função para imprimir o vetor
+void imprimirVetor(int vetor[], int tamanho) {
+    int i;
+    for (i = 0; i < tamanho; i++) {
+        printf("%d ", vetor[i]);
+    }
+    printf("\n");
+}
+
+int main() {
+    int tamanho, opcao;
+
+    printf("Informe o tamanho do vetor: ");
+    scanf("%d", &tamanho);
+
+    int vetor[tamanho];
+
+    printf("Informe os elementos do vetor:\n");
+    for (int i = 0; i < tamanho; i++) {
+        scanf("%d", &vetor[i]);
+    }
+
+    printf("\nEscolha o algoritmo de ordenacao:\n");
+    printf("1. Bubble Sort\n");
+    printf("2. Insertion Sort\n");
+    printf("Opcao: ");
+    scanf("%d", &opcao);
+
+    printf("\nVetor original: ");
+    imprimirVetor(vetor, tamanho);
+
+    switch (opcao) {
+        case 1:
+            bubbleSort(vetor, tamanho);
+            printf("Vetor ordenado usando Bubble Sort: ");
+            imprimirVetor(vetor, tamanho);
+            break;
+        case 2:
+            insertionSort(vetor, tamanho);
+            printf("Vetor ordenado usando Insertion Sort: ");
+            imprimirVetor(vetor, tamanho);
+            break;
+        default:
+            printf("Opcao invalida.\n");
+            break;
+    }
+
+    return 0;
+}
+
+Questão 2. (LISTAS, PILHAS, FILAS e ÁRVORES) Implemente um menu em Linguagem C que apresente as seguintes opções de escolha:
+
+(1) Executar Pilha
+(2) Executar Fila
+(3) Executar Árvore
+
+O usuário tem poder de escolher qual estrutura deseja inserir seus dados. Para cada uma estrutura implementada, a mesma deve implementar as funções abaixo (em outro menu de escolha):
+
+a. Estrutura Pilha: Empilha, Desempilha, Imprimir Pilha, Limpar Pilha, Imprimir Topo Pilha.
+
+b. Estrutura Fila: Enqueue, Dequeue, Imprimir Fila, Limpar Fila, Maior elemento da Fila, Menor elemento da Fila.
+
+c. Estrutura Árvore e todas as operações vista em aula, bem como as seguintes operações:
+
+i. Implemente a função de Buscar elemento na Árvore Binária.
+
+ii. Implemente a função para imprimir os elementos da sub-árvore a direita primeiro, imprime a raiz e depois imprime a sub-árvore a esquerda.
+
+iii. Implemente a função recursiva que irá retornar o maior elemento da Árvore Binária.
+
+R: #include <stdio.h>
+#include <stdlib.h>
+
+// Definição da estrutura para os nós da Árvore Binária
+typedef struct no {
+    int valor;
+    struct no* esquerda;
+    struct no* direita;
+} No;
+
+// Protótipos das funções
+void exibirMenuPrincipal();
+void exibirMenuPilha();
+void exibirMenuFila();
+void exibirMenuArvore();
+void executarPilha();
+void executarFila();
+void executarArvore();
+void empilhar(int valor);
+void desempilhar();
+void imprimirPilha();
+void limparPilha();
+void imprimirTopoPilha();
+void enfileirar(int valor);
+void desenfileirar();
+void imprimirFila();
+void limparFila();
+int maiorElementoFila();
+int menorElementoFila();
+No* criarNo(int valor);
+No* inserirElemento(No* raiz, int valor);
+int buscarElemento(No* raiz, int valor);
+void imprimirArvore(No* raiz);
+void imprimirArvoreDireitaEsquerda(No* raiz);
+int encontrarMaiorElemento(No* raiz);
+
+// Variáveis globais
+No* raizArvore = NULL;
+No* ultimoPilha = NULL;
+No* primeiroFila = NULL;
+No* ultimoFila = NULL;
+
+int main() {
+    int escolha;
+
+    do {
+        exibirMenuPrincipal();
+        scanf("%d", &escolha);
+
+        switch (escolha) {
+            case 1:
+                executarPilha();
+                break;
+            case 2:
+                executarFila();
+                break;
+            case 3:
+                executarArvore();
+                break;
+            case 0:
+                printf("Encerrando o programa.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+                break;
+        }
+    } while (escolha != 0);
+
+    return 0;
+}
+
+void exibirMenuPrincipal() {
+    printf("\n--- Menu Principal ---\n");
+    printf("1. Executar Pilha\n");
+    printf("2. Executar Fila\n");
+    printf("3. Executar Árvore\n");
+    printf("0. Sair\n");
+    printf("Escolha uma opção: ");
+}
+
+void exibirMenuPilha() {
+    printf("\n--- Menu Pilha ---\n");
+    printf("1. Empilhar\n");
+    printf("2. Desempilhar\n");
+    printf("3. Imprimir Pilha\n");
+    printf("4. Limpar Pilha\n");
+    printf("5. Imprimir Topo da Pilha\n");
+    printf("0. Voltar\n");
+    printf("Escolha uma opção: ");
+}
+
+void exibirMenuFila() {
+    printf("\n--- Menu Fila ---\n");
+    printf("1. Enfileirar\n");
+    printf("2. Desenfileirar\n");
+    printf("3. Imprimir Fila\n");
+    printf("4. Limpar Fila\n");
+    printf("5. Maior Elemento da Fila\n");
+    printf("6. Menor Elemento da Fila\n");
+    printf("0. Voltar\n");
+    printf("Escolha uma opção: ");
+}
+
+void exibirMenuArvore() {
+    printf("\n--- Menu Árvore ---\n");
+    printf("1. Inserir Elemento\n");
+    printf("2. Buscar Elemento\n");
+    printf("3. Imprimir Árvore\n");
+    printf("4. Imprimir Árvore (Direita-Esquerda)\n");
+    printf("5. Maior Elemento da Árvore\n");
+    printf("0. Voltar\n");
+    printf("Escolha uma opção: ");
+}
+
+void executarPilha() {
+    int escolha, valor;
+
+    do {
+        exibirMenuPilha();
+        scanf("%d", &escolha);
+
+        switch (escolha) {
+            case 1:
+                printf("Digite o valor a ser empilhado: ");
+                scanf("%d", &valor);
+                empilhar(valor);
+                break;
+            case 2:
+                desempilhar();
+                break;
+            case 3:
+                imprimirPilha();
+                break;
+            case 4:
+                limparPilha();
+                break;
+            case 5:
+                imprimirTopoPilha();
+                break;
+            case 0:
+                printf("Voltando ao menu principal.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+                break;
+        }
+    } while (escolha != 0);
+}
+
+void executarFila() {
+    int escolha, valor;
+
+    do {
+        exibirMenuFila();
+        scanf("%d", &escolha);
+
+        switch (escolha) {
+            case 1:
+                printf("Digite o valor a ser enfileirado: ");
+                scanf("%d", &valor);
+                enfileirar(valor);
+                break;
+            case 2:
+                desenfileirar();
+                break;
+            case 3:
+                imprimirFila();
+                break;
+            case 4:
+                limparFila();
+                break;
+            case 5:
+                printf("Maior elemento da Fila: %d\n", maiorElementoFila());
+                break;
+            case 6:
+                printf("Menor elemento da Fila: %d\n", menorElementoFila());
+                break;
+            case 0:
+                printf("Voltando ao menu principal.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+                break;
+        }
+    } while (escolha != 0);
+}
+
+void executarArvore() {
+    int escolha, valor, encontrado;
+
+    do {
+        exibirMenuArvore();
+        scanf("%d", &escolha);
+
+        switch (escolha) {
+            case 1:
+                printf("Digite o valor a ser inserido na Árvore: ");
+                scanf("%d", &valor);
+                raizArvore = inserirElemento(raizArvore, valor);
+                break;
+            case 2:
+                printf("Digite o valor a ser buscado na Árvore: ");
+                scanf("%d", &valor);
+                encontrado = buscarElemento(raizArvore, valor);
+                if (encontrado)
+                    printf("Elemento encontrado na Árvore.\n");
+                else
+                    printf("Elemento não encontrado na Árvore.\n");
+                break;
+            case 3:
+                printf("Imprimindo Árvore:\n");
+                imprimirArvore(raizArvore);
+                printf("\n");
+                break;
+            case 4:
+                printf("Imprimindo Árvore (Direita-Esquerda):\n");
+                imprimirArvoreDireitaEsquerda(raizArvore);
+                printf("\n");
+                break;
+            case 5:
+                printf("Maior elemento da Árvore: %d\n", encontrarMaiorElemento(raizArvore));
+                break;
+            case 0:
+                printf("Voltando ao menu principal.\n");
+                break;
+            default:
+                printf("Opção inválida. Tente novamente.\n");
+                break;
+        }
+    } while (escolha != 0);
+}
+
+void empilhar(int valor) {
+    No* novoNo = criarNo(valor);
+    novoNo->direita = ultimoPilha;
+    ultimoPilha = novoNo;
+    printf("Elemento %d empilhado com sucesso.\n", valor);
+}
+
+void desempilhar() {
+    if (ultimoPilha == NULL) {
+        printf("A pilha está vazia.\n");
+    } else {
+        No* temp = ultimoPilha;
+        ultimoPilha = ultimoPilha->direita;
+        printf("Elemento %d desempilhado com sucesso.\n", temp->valor);
+        free(temp);
+    }
+}
+
+void imprimirPilha() {
+    if (ultimoPilha == NULL) {
+        printf("A pilha está vazia.\n");
+    } else {
+        printf("Elementos da pilha: ");
+        No* atual = ultimoPilha;
+        while (atual != NULL) {
+            printf("%d ", atual->valor);
+            atual = atual->direita;
+        }
+        printf("\n");
+    }
+}
+
+void limparPilha() {
+    while (ultimoPilha != NULL) {
+        No* temp = ultimoPilha;
+        ultimoPilha = ultimoPilha->direita;
+        free(temp);
+    }
+    printf("A pilha foi limpa.\n");
+}
+
+void imprimirTopoPilha() {
+    if (ultimoPilha == NULL) {
+        printf("A pilha está vazia.\n");
+    } else {
+        printf("Topo da pilha: %d\n", ultimoPilha->valor);
+    }
+}
+
+void enfileirar(int valor) {
+    No* novoNo = criarNo(valor);
+    if (primeiroFila == NULL) {
+        primeiroFila = novoNo;
+        ultimoFila = novoNo;
+    } else {
+        ultimoFila->direita = novoNo;
+        ultimoFila = novoNo;
+    }
+    printf("Elemento %d enfileirado com sucesso.\n", valor);
+}
+
+void desenfileirar() {
+    if (primeiroFila == NULL) {
+        printf("A fila está vazia.\n");
+    } else {
+        No* temp = primeiroFila;
+        primeiroFila = primeiroFila->direita;
+        printf("Elemento %d desenfileirado com sucesso.\n", temp->valor);
+        free(temp);
+    }
+}
+
+void imprimirFila() {
+    if (primeiroFila == NULL) {
+        printf("A fila está vazia.\n");
+    } else {
+        printf("Elementos da fila: ");
+        No* atual = primeiroFila;
+        while (atual != NULL) {
+            printf("%d ", atual->valor);
+            atual = atual->direita;
+        }
+        printf("\n");
+    }
+}
+
+void limparFila() {
+    while (primeiroFila != NULL) {
+        No* temp = primeiroFila;
+        primeiroFila = primeiroFila->direita;
+        free(temp);
+    }
+    ultimoFila = NULL;
+    printf("A fila foi limpa.\n");
+}
+
+int maiorElementoFila() {
+    if (primeiroFila == NULL) {
+        printf("A fila está vazia.\n");
+        return -1;
+    } else {
+        int maior = primeiroFila->valor;
+        No* atual = primeiroFila->direita;
+        while (atual != NULL) {
+            if (atual->valor > maior) {
+                maior = atual->valor;
+            }
+            atual = atual->direita;
+        }
+        return maior;
+    }
+}
+
+int menorElementoFila() {
+    if (primeiroFila == NULL) {
+        printf("A fila está vazia.\n");
+        return -1;
+    } else {
+        int menor = primeiroFila->valor;
+        No* atual = primeiroFila->direita;
+        while (atual != NULL) {
+            if (atual->valor < menor) {
+                menor = atual->valor;
+            }
+            atual = atual->direita;
+        }
+        return menor;
+    }
+}
+
+No* criarNo(int valor) {
+    No* novoNo = (No*)malloc(sizeof(No));
+    novoNo->valor = valor;
+    novoNo->esquerda = NULL;
+    novoNo->direita = NULL;
+    return novoNo;
+}
+
+No* inserirElemento(No* raiz, int valor) {
+    if (raiz == NULL) {
+        return criarNo(valor);
+    } else {
+        if (valor < raiz->valor) {
+            raiz->esquerda = inserirElemento(raiz->esquerda, valor);
+        } else {
+            raiz->direita = inserirElemento(raiz->direita, valor);
+        }
+        return raiz;
+    }
+}
+
+int buscarElemento(No* raiz, int valor) {
+    if (raiz == NULL) {
+        return 0;
+    } else {
+        if (valor == raiz->valor) {
+            return 1;
+        } else if (valor < raiz->valor) {
+            return buscarElemento(raiz->esquerda, valor);
+        } else {
+            return buscarElemento(raiz->direita, valor);
+        }
+    }
+}
+
+void imprimirArvore(No* raiz) {
+    if (raiz != NULL) {
+        imprimirArvore(raiz->esquerda);
+        printf("%d ", raiz->valor);
+        imprimirArvore(raiz->direita);
+    }
+}
+
+void imprimirArvoreDireitaEsquerda(No* raiz) {
+    if (raiz != NULL) {
+        imprimirArvoreDireitaEsquerda(raiz->direita);
+        printf("%d ", raiz->valor);
+        imprimirArvoreDireitaEsquerda(raiz->esquerda);
+    }
+}
+
+int encontrarMaiorElemento(No* raiz) {
+    if (raiz == NULL) {
+        printf("A árvore está vazia.\n");
+        return -1;
+    } else {
+        if (raiz->direita == NULL) {
+            return raiz->valor;
+        } else {
+            return encontrarMaiorElemento(raiz->direita);
+        }
+    }
+}
